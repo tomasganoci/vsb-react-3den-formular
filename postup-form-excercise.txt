@@ -1,0 +1,299 @@
+- nainstalovat cra
+- vyměnit src
+- nainstalovat BS
+
+1. Jako první se spustí prompt, který se bude vyžadovat zadání validní hodnoty float čísla, které se objeví v prvním NumImp pro výpočet součtu dvou čísel.
+Musí být ošetřena validace uživatelského vstupu, jakákoliv jiná hodnota než float číslo zapříčiní, že prompt vyskočí znova. A bude vyskakovat, dokud uživatel nezadá validní hodnotu. Může být nastavena defaultní hodnota.
+Proměnná nechť se jmenuje scitanec1.
+
+	ŘEŠENÍ
+	- import validateFloat from "./functions/validateFloat";
+	- const [scitanec1, setScitanec1] = useState("");
+	-   useEffect(() => {
+			let temp = prompt("Zadejte hodnotu prvního sčítance.");
+			while (!validateFloat(temp)) {
+			  temp = prompt("Zadejte hodnotu prvního sčítance.");
+			}
+			setScitanec1(temp);
+		  }, []);
+	  
+2. RbGroup s labelem „Příchuť zmrzliny“, id "rgb-prichut" a s hodnotami: vanilková, čokoládová, míchaná. Nezapomeňte na proměnnou "prichut" svázanou s vybranou hodnotou a hlavní handler "handleData", 
+	který bude zpracovávat všechny inputy. parametry handleru - data, source
+	
+	ŘEŠENÍ
+	- const [prichut, setPrichut] = useState("vanilková");
+	
+	- import RbGroup from "./components/RbGroup";
+	
+	- <RbGroup
+              label="Příchuť zmrzliny"
+              id="rbg-prichut"
+              selectedValue={prichut}
+              dataIn={[
+                { label: "vanilková", value: "vanilková" },
+                { label: "čokoládová", value: "čokoládová" },
+                { label: "míchaná", value: "míchaná" },
+              ]}
+              handleData={handleData}
+       />
+	   
+	- const handleData = (data, source) => {
+			switch (source) {
+			  case "rbg-prichut": {
+				setPrichut(data);
+				break;
+			  }
+			  default:
+				break;
+			}
+		  };
+
+3. ChbGroup s labelem „Něco navrch?“ a s labels jednotlivých checkboxů: kousky oříšků, čoko hoblinky, karamelové křupinky. 
+	id="chb-pridavek", proměnná pridavky
+	hodnoty jednotlivých chceckboxů - string pole - "s kousky oříšků", "s čoko hoblinkami", "s karamelovými křupinkami"
+	
+	ŘEŠENÍ
+	- import ChbGroup from "./components/ChbGroup";
+	
+	- const [pridavky, setPridavky] = useState([]);
+	
+	-       <ChbGroup
+              label="Něco navrch?"
+              id="chb-pridavek"
+              dataIn={[
+                { label: "kousky oříšků", value: "s kousky oříšků" },
+                { label: "čoko hoblinky", value: "s čoko hoblinkami" },
+                {
+                  label: "karamelové křupinky",
+                  value: "s karamelovými křupinkami",
+                },
+              ]}
+              selectedValue={pridavky}
+              handleData={handleData}
+            />
+			
+	- case "chb-pridavek": {
+        setPridavky(data);
+        break;
+      }
+
+4. NumImp pro zadání počtu kopečků, min 1, max 4. Proměnná kopecky, id "num-kopecky", label viz obrázek
+	
+	ŘEŠENÍ
+	- import NumImp from "./components/NumImp";
+	
+	- const [kopecky, setKopecky] = useState(1);
+	
+	-       <NumImp
+              label="Počet kopečků (max 4)"
+              id="num-kopecky"
+              dataIn={kopecky}
+              handleData={handleData}
+            />
+			
+	- case "num-kopecky": {
+        if (data > 0 && data < 5) {
+          setKopecky(data)
+        }
+        break;
+      }
+	  
+5. SelectBox pro výběr druhu zmrzliny s hodnotami: smetanová, jogurtová, nízkotučná
+	- proměnná druh
+	- id = "sel-druh"
+	
+	ŘEŠENÍ
+	- import Select from "./components/Select";
+	- const [druh, setDruh] = useState("smetanová");
+	- 		<Select
+              label="Vyberte druh zmrzliny"
+              id="sel-druh"
+              dataIn={["smetanová", "jogurtová", "nízkotučná"]}
+              selectedValue={druh}
+              handleData={handleData}
+            />
+	- case "sel-druh": {
+        setDruh(data);
+        break;
+      }
+	
+	
+6. 	výpis zmrzliny, např.: Vanilková s oříšky 3 kopečky nízkotučná a případně přídavky - umístění dle layoutu!
+
+	ŘEŠENÍ
+	        <p>
+              {prichut} {kopecky} kopečky{" "}
+              {pridavky.map((pridavek) => pridavek + " ")}
+              {druh}
+            </p>
+	
+	
+7. Range s hodnotami 0-100 jako reprezentace místa v procentech na disku, proměnná disk, id="rng-disk"
+	
+	ŘEŠENÍ
+	- import Range from "./components/Range";
+	
+	- const [disk, setDisk] = useState(50);
+	
+	-       <Range
+              min={0}
+              max={100}
+              label="Místo na disku"
+              id="rng-disk"
+              dataIn={disk}
+              handleData={handleData}
+            />
+
+	- case "rng-disk": {
+        setDisk(data);
+        break;
+      }
+	  
+	  
+8. výpis aktuálního času a procent volného místa na disku – hodnota z Range
+	
+	ŘEŠENÍ
+	- import Clock from "./components/Clock"
+	
+	-       <div>
+              <Clock />, zbývá {disk}% místa na disku
+            </div>
+
+9. ProgressBar – poběží po pevně daný čas v sekundách, nastavte třeba na 20s, svázané se proměnnou progress, id="pgb-progress", progress vypočítáte pomocí timeru, proměnné countDown a konstanty initialCountDown
+
+	ŘEŠENÍ	
+	- import ProgressBar from "./components/ProgressBar"
+	
+	-   const [initialCountDown, setInitialCountDown] = useState(20);
+		const [countDown, setCountDown] = useState(20);
+	
+	- <ProgressBar id="pgb-progress" dataIn={progress} />
+	
+	-   useEffect(() => {
+		  if (countDown > 0) {
+			const timer = setInterval(() => {
+			  setCountDown(countDown - 1);
+			}, 1000);
+			return () => clearInterval(timer);
+		  }
+		}, [countDown]);
+
+		const progress =
+		  countDown > 0
+			? ((initialCountDown - countDown) / initialCountDown) * 100
+			: 100;
+			
+10. výpis – „Instalace probíhá, čekejte x sekund“, místo x bude aktuální odpočet směrem k nule
+
+	ŘEŠENÍ
+	- <p>Instalace probíhá, počkejte {countDown} sekund.</p>
+	
+11. 2x TextBox – pro zadání dvou číselných hodnot - scitanec už máte... id="txb-scitanec1" a id="txb-scitanec2"
+	Opravdu chci, aby tam byl TextBox
+	
+	ŘEŠENÍ
+	- import TextBox from "./components/TextBox"
+	- const [scitanec2, setScitanec2] = useState("");
+	-       <div className="row">
+              <div className="col-6">
+                {" "}
+                <TextBox
+                  dataIn={scitanec1}
+                  id="txb-scitanec1"
+                  handleData={handleData}
+                  label="sčítanec 1"
+                />
+              </div>
+              <div className="col-6">
+                {" "}
+                <TextBox
+                  dataIn={scitanec2}
+                  id="txb-scitanec2"
+                  handleData={handleData}
+                  label="sčítanec 2"
+                />
+              </div>
+            </div>
+	
+12. Button – po kliku na něj se udělá check, zda jsou vstupy validní float a spustí se fce pro součet, id="btn-soucet", nezapomeňte na event handler s parametrem source
+	pokud nebudou vstupy validní - proměnná "vysledek" bude string s hláškou "Zadejte validní sčítance a zmáčkněte tlačítko výpočtu". pokud to bude správně, v proměnné bude součet sčítanců
+	
+	ŘEŠENÍ
+	- import Button from "./components/Button"
+	-           <Button
+                  id="btn-soucet"
+                  label="Vypočítej součet"
+                  handleEvent={handleEvent}
+                />
+	
+	- const [vysledek, setVysledek] = useState("Zadejte validní sčítance a zmáčkněte tlačítko výpočtu");
+	
+	- const secti = () => {
+		if (validateFloat(scitanec1) && validateFloat(scitanec2)) {
+		  setVysledek(`výsledek sčítání je ${parseFloat(scitanec1) + parseFloat(scitanec2)}`)
+		} else {
+		  setVysledek("Zadejte validní sčítance a zmáčkněte tlačítko výpočtu");
+		}
+	  }
+	-   const handleEvent = (source) => {
+			switch (source) {
+			  case "btn-soucet": {
+				secti();
+				break;
+			  }
+			  default:
+				break;
+			}
+		  };
+		  
+13. vypište výsledek
+	
+	ŘEŠENÍ
+	<div className="col-6">{vysledek}</div>
+	
+14. TextArea - proměnná text, id="txa-text"
+
+	ŘEŠENÍ
+	- import TextArea from "./components/TextArea";
+	- const [text, setText] = useState("");
+	-      <TextArea
+              id="txa-text"
+              label="Operace s textem"
+              dataIn={text}
+              handleData={handleData}
+              height={150}
+            />
+	- case "txa-text": {
+        setText(data);
+        break;
+      }
+	  
+15. File – pro načtení textu ze souboru
+
+	ŘEŠENÍ
+	- import File from "./components/File";
+	-           <File
+                  id="file-load"
+                  label="Načti text ze souboru"
+                  handleData={handleData}
+                />
+	- case "file-load": {
+        setText(data);
+        break;
+      }
+	  
+	  
+16. Button – pro uložení textu do souboru
+	využijte funkce saveText
+	
+	ŘEŠENÍ
+	- import saveText from "./functions/saveText"
+	-           <Button
+                  id="btn-download"
+                  label="Stáhni soubor s textem"
+                  handleEvent={handleEvent}
+                />
+	- case "btn-download": {
+        saveText(text);
+        break;
+      }
